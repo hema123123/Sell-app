@@ -1,13 +1,18 @@
 <template>
   <div id="app">
-    <div class="icon-add_circle"></div>
-    <router-view/>
+    <vheader></vheader>
+    <div class="tab">tab</div>
+    <div class="content">content</div>
   </div>
 </template>
 
 <script>
+  import vheader from './components/header/header';
   export default {
     name: 'App',
+    components:{
+      vheader
+    },
     created(){
       this.$http.get('http://localhost:8080/api/ratings').then((response) => {
         console.log(response);
@@ -16,15 +21,10 @@
   }
 </script>
 
-<style>
-  @import "common/style/icon.css";
-
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+<style lang="scss" scoped>
+  @import "./common/style/icon.css";
+  $primary-color:red;
+  .icon-add_circle{
+    color: $primary-color;
   }
 </style>
