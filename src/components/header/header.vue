@@ -28,15 +28,31 @@
     <div class="background">
       <img :src="seller.avatar" alt="商铺头像">
     </div>
+    <div class="detail">
+      <div class="detail-wrapper clearfix">
+        <div class="detail-main">
+          <h1 class="name">{{seller.name}}</h1>
+          <star class="star" :size="48" :score="seller.score"></star>
+          <p>{{seller.bulletin}}</p>
+        </div>
+      </div>
+      <div class="detail-close">
+        <i class="icon-close"></i>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+  import star from "@/components/star/star"
   export default {
     props: {
       seller: {
         type: Object
       }
+    },
+    components:{
+      star
     },
     created(){
       this.classMap=['decrease','discount','special','invoice','guarantee']
@@ -46,10 +62,14 @@
 
 <style lang="scss" scoped>
   @import "../../common/style/icon.css";
+
+
   .font{
     font-weight: $font-weigth;
     line-height: 12px;
   }
+  $height:64px;
+
   .header {
     color: #fff;
     position: relative;
@@ -181,6 +201,43 @@
       filter: blur(10px);
       img{
         width: 100%;
+      }
+    }
+    .detail{
+      position: fixed;
+      z-index: 100;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: rgba(7,17,27,.8);
+      .detail-wrapper{
+        width: 100%;
+        min-height: 100%;
+        .detail-main{
+          padding: $height 36px;
+          .name{
+            font-size: 16px;
+            line-height: 16px;
+            font-weight: 700;
+            text-align: center;
+          }
+          .star{
+            text-align: center;
+          }
+        }
+      }
+      .detail-close{
+        position: relative;
+        width: 100%;
+        height: 64px;
+        font-size: 32px;
+        line-height: 64px;
+        color: rgba(255,255,255,.5);
+        margin-top: -$height;
+        text-align: center;
+        clear: both;
       }
     }
   }
