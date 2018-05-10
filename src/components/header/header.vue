@@ -11,7 +11,7 @@
         </div>
         <div class="description">{{seller.description}}/{{seller.deliveryTime}}分钟送达</div>
         <div v-if="seller.supports&&seller.supports.length" class="support">
-          <span class="icon" :class="classMap[seller.supports[0].type]"></span>
+          <support :type="seller.supports[0].type" :size="1"></support>
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
@@ -33,6 +33,12 @@
         <div class="detail-main">
           <h1 class="name">{{seller.name}}</h1>
           <star class="star" :size="48" :score="seller.score"></star>
+          <div v-if="seller.supports&&seller.supports.length">
+            <div v-for="support in seller.supports">
+              <support :type="support.type" :size="2"></support>
+              <span>{{support.description}}</span>
+            </div>
+          </div>
           <p>{{seller.bulletin}}</p>
         </div>
       </div>
@@ -44,7 +50,8 @@
 </template>
 
 <script>
-  import star from "@/components/star/star"
+  import star from "@/components/star/star";
+  import support from "@/components/support/support";
   export default {
     props: {
       seller: {
@@ -52,7 +59,7 @@
       }
     },
     components:{
-      star
+      star,support
     },
     created(){
       this.classMap=['decrease','discount','special','invoice','guarantee']
@@ -119,28 +126,6 @@
         .support{
           margin-bottom: 2px;
           font-size: 0;
-          .icon{
-            width: 12px;
-            height: 12px;
-            display: inline-block;
-            vertical-align: top;
-            margin-right: 4px;
-            &.decrease{
-              @include bg-image("./images/decrease_1");
-            }
-            &.discount{
-              @include bg-image("./images/discount_1");
-            }
-            &.guarantee{
-              @include bg-image("./images/guarantee_1");
-            }
-            &.invoice{
-              @include bg-image("./images/invoice_1");
-            }
-            &.special{
-              @include bg-image("./images/special_1");
-            }
-          }
           .text{
             @extend .font;
             font-size: 10px;
