@@ -29,7 +29,6 @@
         let score = Math.floor(this.score * 2) / 2;
         let hasDecimal = score % 1 !== 0;
         let interger=Math.floor(score);
-        console.log(score,score % 1, score % 1 !== 0);
         for(let i=0;i<interger;i++){
           res.push("on");
         }
@@ -37,7 +36,6 @@
         while(res.length<LEN){
           res.push("off");
         };
-        console.log(res);
         return res;
       }
     }
