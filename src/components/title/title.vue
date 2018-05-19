@@ -8,7 +8,7 @@
 
 <script>
   export default {
-    name: "title",
+    name: "vtitle",
     props: {
       text: {
         type: String
@@ -18,7 +18,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .title {
+  .vtitle {
     width: 100%;
     margin: 28px auto 24px;
     display: flex;

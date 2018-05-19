@@ -74,7 +74,7 @@
     &.icon_3 {
       width: 12px;
       height: 12px;
-      margin-right: 4px;
+      margin-right: 2px;
       &.decrease_3 {
         @include bg-image("./images/decrease_3");
       }

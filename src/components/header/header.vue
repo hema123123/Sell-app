@@ -91,10 +91,7 @@
 
 <style lang="scss" scoped>
   @import "../../common/style/icon.css";
-  .font {
-    font-weight: $font-weigth;
-    line-height: 12px;
-  }
+
 
   $height: 64px; /*sticky foot高度*/
 
