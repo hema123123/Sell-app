@@ -1,5 +1,5 @@
 <template>
-  <div class="title">
+  <div class="vtitle">
     <div class="line"></div>
     <h2 class="text">{{text}}</h2>
     <div class="line"></div>

@@ -1,36 +1,40 @@
 <template>
   <div class="goods">
-    <ul class="menu-wrapper">
-      <li v-for="item in goods" class="menu-item">
-        <span class="text"><support class="icon" v-show="item.type>0" :type="item.type" :size="3"></support>{{item.name}}</span>
-      </li>
-    </ul>
-    <ul class="food-wrapper">
-      <li v-for="item in goods" class="food-list">
-        <h1 class="title">{{item.name}}</h1>
-        <ul>
-          <li v-for="food in item.foods" class="food-item">
-            <div class="icon"><img :src="food.icon" alt=""></div>
-            <div class="content">
-              <h2 class="name">{{food.name}}</h2>
-              <p class="desc">{{food.description}}</p>
-              <div class="extra">
-                <span class="count">月售{{food.sellCount}}份</span>
-                <span class="rating">好评{{food.rating}}%</span>
+    <div class="menu-wrapper" ref="menuWrapper">
+      <ul>
+        <li v-for="(item,index) in goods" class="menu-item" :class="{'current':currentIndex==index}" @click="selectMenu(index)">
+          <span class="text"><support class="icon" v-show="item.type>0" :type="item.type" :size="3"></support>{{item.name}}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="food-wrapper" ref="foodWrapper">
+      <ul>
+        <li v-for="item in goods" class="food-list foot-list-hook">
+          <h1 class="title">{{item.name}}</h1>
+          <ul>
+            <li v-for="food in item.foods" class="food-item">
+              <div class="icon"><img :src="food.icon" alt=""></div>
+              <div class="content">
+                <h2 class="name">{{food.name}}</h2>
+                <p class="desc">{{food.description}}</p>
+                <div class="extra">
+                  <span class="count">月售{{food.sellCount}}份</span><span class="rating">好评{{food.rating}}%</span>
+                </div>
+                <div class="price">
+                  <span class="newprice">￥{{food.price}}</span><span class="oldprice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                </div>
               </div>
-              <div class="price">
-                <span class="newprice">￥{{food.price}}</span><span class="oldprice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </li>
-    </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
   import support from '@/components/support/support';
+  import BScroll from 'better-scroll';
 
   const ERR_OK = 0;
   export default {
@@ -40,14 +44,63 @@
     },
     data() {
       return {
-        goods: {}
+        goods: {},
+        listHeight: [],
+        scrollY: 0
+      }
+    },
+    computed: {
+      currentIndex() {
+        for (let i = 0; i < this.listHeight.length; i++) {
+          let height1 = this.listHeight[i];
+          let height2 = this.listHeight[i + 1];
+          if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+            return i;
+          }
+        }
+        return 0;
       }
     },
     created() {
       this.$http.get('/api/goods').then((res) => {
         res = res.data;
-        if (res.errno == ERR_OK) this.goods = res.data;
-      })
+        if (res.errno == ERR_OK) {
+          this.goods = res.data;
+          this.$nextTick(() => {
+            this._initScroll();
+            this._calculateHeight();
+          })
+        }
+      });
+    },
+    methods: {
+      _initScroll() {
+        this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+          click:true
+        });
+        this.foodScroll = new BScroll(this.$refs.foodWrapper, {
+          probeType: 3
+        });
+
+        this.foodScroll.on('scroll', (pos) => {
+          this.scrollY = Math.abs(Math.round(pos.y));
+        });
+      },
+      _calculateHeight() {
+        let foodList = this.$refs.foodWrapper.getElementsByClassName('foot-list-hook');
+        let height = 0;
+        this.listHeight.push(height);
+        for (let i = 0; i < foodList.length; i++) {
+          let item = foodList[i];
+          height += item.clientHeight;
+          this.listHeight.push(height);
+        }
+      },
+      selectMenu(index){
+        let foodList = this.$refs.foodWrapper.getElementsByClassName('foot-list-hook');
+        let el=foodList[index];
+        this.foodScroll.scrollToElement(el,300);
+      }
     }
   }
 </script>
@@ -68,10 +121,17 @@
         display: table;
         width: 56px;
         height: 54px;
-        margin: 0 12px;
+        padding: 0 12px;
         @extend .font;
         line-height: 14px;
         @include border-1px(rgba(7, 17, 27, .1));
+        &.current{
+          background: #fff;
+          font-weight: 700;
+          margin-top: -1px;
+          z-index: 10;
+          @include border-none();
+        }
         .text {
           display: table-cell;
           vertical-align: middle;
@@ -95,51 +155,53 @@
       .food-item {
         display: flex;
         margin: 18px;
-        padding-bottom:18px ;
+        padding-bottom: 18px;
         @include border-1px(rgba(7, 17, 27, .1));
         .icon {
           flex: 0 0 56px;
           width: 56px;
           margin-right: 10px;
-          img{
+          img {
             width: 100%;
           }
         }
-        .content{
-          .name{
+        .content {
+          .name {
             margin: 2px 0 8px;
             font-size: 14px;
             line-height: 14px;
-            color:rgb(7,17,27);
+            color: rgb(7, 17, 27);
           }
-          .extra{
+          .extra {
             font-size: 0;
           }
-          .desc,.extra{
+          .desc, .extra {
             line-height: 10px;
-            color:rgb(147,153,159);
+            color: rgb(147, 153, 159);
           }
-          .desc{
+          .desc {
             margin: 8px 0;
+            line-height: 12px;
           }
-          .desc,.count,.rating{
+          .desc, .count, .rating {
             font-size: 10px;
           }
-          .extra{
-            .count{
+          .extra {
+            .count {
               margin-right: 12px;
             }
           }
-          .price{
+          .price {
             font-weight: 700;
             line-height: 24px;
-            .newprice{
+            font-size: 0;
+            .newprice {
               font-size: 14px;
-              color:rgb(240,20,20);
-              margin-right: 18px;
+              color: rgb(240, 20, 20);
+              margin-right: 8px;
             }
-            .oldprice{
-              color:rgb(147,153,159);
+            .oldprice {
+              color: rgb(147, 153, 159);
               text-decoration: line-through;
               font-size: 10px;
             }
