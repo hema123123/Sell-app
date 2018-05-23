@@ -23,24 +23,33 @@
                 <div class="price">
                   <span class="newprice">￥{{food.price}}</span><span class="oldprice" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
+                <cartcontrol class="cartcontrol" :food="food"></cartcontrol>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
+    <shopcart :selectFoods="selectFoods" :deliveryPrice="seller.deliveryPrice" :minPrice="seller.minPrice"></shopcart>
   </div>
 </template>
 
 <script>
   import support from '@/components/support/support';
   import BScroll from 'better-scroll';
+  import shopcart from '@/components/shopcart/shopcart'
+  import cartcontrol from '@/components/cartcontrol/cartcontrol'
 
   const ERR_OK = 0;
   export default {
     name: "goods",
     components: {
-      support
+      support,shopcart,cartcontrol
+    },
+    props:{
+      seller:{
+        type:Object
+      },
     },
     data() {
       return {
@@ -59,6 +68,17 @@
           }
         }
         return 0;
+      },
+      selectFoods(){
+        let selectFoods=[];
+        this.goods.forEach((good)=>{
+          good.foods.forEach((food)=>{
+            console.log(food);
+            if(food.count) selectFoods.push(food);
+          })
+        })
+        console.log("------------------------");
+        return selectFoods;
       }
     },
     created() {
@@ -79,7 +99,8 @@
           click:true
         });
         this.foodScroll = new BScroll(this.$refs.foodWrapper, {
-          probeType: 3
+          probeType: 3,
+          click:true
         });
 
         this.foodScroll.on('scroll', (pos) => {
@@ -124,18 +145,20 @@
         padding: 0 12px;
         @extend .font;
         line-height: 14px;
-        @include border-1px(rgba(7, 17, 27, .1));
         &.current{
           background: #fff;
           font-weight: 700;
           margin-top: -1px;
           z-index: 10;
-          @include border-none();
+          .text{
+            @include border-none();
+          }
         }
         .text {
           display: table-cell;
           vertical-align: middle;
           font-size: 12px;
+          @include border-1px(rgba(7, 17, 27, .1));
         }
       }
     }
@@ -166,6 +189,8 @@
           }
         }
         .content {
+          width: 100%;
+          position: relative;
           .name {
             margin: 2px 0 8px;
             font-size: 14px;
@@ -205,6 +230,11 @@
               text-decoration: line-through;
               font-size: 10px;
             }
+          }
+          .cartcontrol{
+            position: absolute;
+            right: 0;
+            bottom: 12px;
           }
         }
         &:last-child {
